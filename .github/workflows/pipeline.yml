@@ -26,7 +26,7 @@ jobs:
   Gate-Step:
     runs-on: ubuntu-latest
     needs: Check-Commits
-    environment: ${{ needs.Check-Commits.outputs.blocked == "BLOCKED" && 'deployment-gate' || 'no-deployment-gate' }}
+    environment: ${{ needs.Check-Commits.outputs.blocked == 'BLOCKED' && 'deployment-gate' || 'no-deployment-gate' }}
     steps:
       - run: |
           if [[ ${{ vars.BLOCK_DEPLOYMENT }} != "" ]]
