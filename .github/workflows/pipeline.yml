@@ -25,7 +25,7 @@ jobs:
           bb: latest
       - run: echo "blocked=$(bb gate.clj)" >> $GITHUB_OUTPUT
         id: gate-blocked-by-commit
-      - if: ${{ steps.gate-blocked-by-commit.outputs.blocked == "BLOCKED" }}
+      - if: ${{ steps.gate-blocked-by-commit.outputs.blocked == 'BLOCKED' }}
         run: echo "$(bb summary.clj)" >> $GITHUB_STEP_SUMMARY
 
   Gate-Step:
