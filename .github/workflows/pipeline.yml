@@ -1,0 +1,20 @@
+name: Testing Pipeline
+on:
+  push:
+    branches:
+      - main
+jobs:
+  Dummy-Step:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+  Gate-Step:
+    runs-on: ubuntu-latest
+    environment: live
+    steps:
+      - run: echo "step approved"
+  Deploy-Step:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "would deploy now"
+
