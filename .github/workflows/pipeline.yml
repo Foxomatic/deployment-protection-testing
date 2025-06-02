@@ -42,7 +42,7 @@ jobs:
       - run: echo "would deploy now"
   Post-Deploy-Tag-Step:
     runs-on: ubuntu-latest
-    needs: Check-Commits
+    needs: Deploy-Step
     steps:
       - run: echo "now=$(date +%s)" >> $GITHUB_OUTPUT
         id: timestamp
