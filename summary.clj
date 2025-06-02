@@ -31,6 +31,6 @@
           "# Deployment requires approval\n\nThe following commits will be deployed if approved:\n\n"
           (map (fn [hash msg] 
                         (let [exclamation-mark? (str/starts-with? msg "!")]
-                          (str hash " " (when exclamation-mark? "**")
+                          (str "[`" (subs hash 0 6) "`](" hash ") " (when exclamation-mark? "**")
                                msg (when exclamation-mark? "**"))))
                       git-commit-hashes git-messages))))
