@@ -9,15 +9,50 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+  Check-Commits:
+    needs: Dummy-Step
+    runs-on: ubuntu-latest
+    outputs:
+      blocked: ${{ steps.gate-blocked-by-commit.outputs.blocked }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch complete history including tags
+      - uses: DeLaGuardo/setup-clojure@13.2
+        with:
+          bb: latest
+      - run: echo "blocked=$(bb gate.clj)" >> $GITHUB_OUTPUT
+        id: gate-blocked-by-commit
   Gate-Step:
     runs-on: ubuntu-latest
-    needs: Dummy-Step
-    environment: ${{ false && 'live' || 'sthelse' }}
+    needs: Check-Commits
+    environment: ${{ needs.Check-Commits.outputs.blocked == "BLOCKED" && 'deployment-gate' || 'no-deployment-gate' }}
     steps:
-      - run: echo "step approved"
+      - run: |
+          if [[ ${{ vars.BLOCK_DEPLOYMENT }} != "" ]]
+          then
+            echo "Deployment is blocked because the BLOCK_DEPLOYMENT variable is set."
+            echo "Reason for blocking deployment: ${{ vars.BLOCK_DEPLOYMENT }}"
+            exit 1
+          fi
   Deploy-Step:
     runs-on: ubuntu-latest
     needs: Gate-Step
     steps:
       - run: echo "would deploy now"
+  Post-Deploy-Tag-Step:
+    runs-on: ubuntu-latest
+    needs: Gate-Step
+    steps:
+      - run: echo "now=$(date +%s)" >> $GITHUB_OUTPUT
+        id: timestamp
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: 'refs/tags/deployed-${{ steps.timestamp.outputs.now }}',
+              sha: context.sha
+            })
 
