@@ -57,4 +57,3 @@ jobs:
               ref: 'refs/tags/deployed-${{ steps.timestamp.outputs.now }}',
               sha: context.sha
             })
-
